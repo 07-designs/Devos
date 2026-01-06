@@ -1,0 +1,50 @@
+Project Title: DevOS - The Unified Developer Command Center
+
+Role: You are an Expert Full-Stack Architect and Engineer.
+
+Goal: Build a production-ready, highly responsive web application called "DevOS". This is a "One-Stop Platform" for developers to manage their coding profiles, development tools, and cloud resources in a single dashboard.
+
+Tech Stack Requirements:
+- Framework: Next.js 14+ (App Router)
+- Language: TypeScript
+- Styling: Tailwind CSS (with Shadcn/UI components for a premium look)
+- Backend: Next.js Server Actions & API Routes
+- Database: PostgreSQL (with Prisma ORM)
+- Authentication: NextAuth.js (Auth.js) - Google & GitHub Providers
+- AI Integration: Google Gemini API (Google Generative AI SDK)
+- Icons: Lucide-React
+
+Core Features & Architecture:
+
+1. The "Command Center" (Dashboard):
+   - A grid-based layout displaying "Widgets" for different platforms.
+   - Section 1: Competitive Programming (LeetCode, Codeforces, CodeChef, AtCoder).
+   - Section 2: Version Control (GitHub, GitLab, Bitbucket).
+   - Section 3: Data Science & Cloud (Kaggle, Google Colab, Azure, AWS).
+   - Functionality: Each widget should display a "Connect" button (to input username/API key) and once connected, show a summary of stats (e.g., LeetCode ranking, GitHub contributions graph mockup, etc.).
+   - "Quick Link" Action: Clicking the widget title opens the respective platform in a new tab (simulating the "Go to" feature).
+
+2. The "Brutal Reality" AI Coach (Gemini Integration):
+   - Create a dedicated page or modal called "The Mirror".
+   - Logic: Aggregates the user's stats from the connected widgets (e.g., "Solved 50 easy problems", "No GitHub commits in 3 days").
+   - AI Persona: The AI must be a "Ruthless Senior Engineer/Career Coach". It should not be nice. It should critique the user's low activity, identify gaps in their stack, and give a "Brutal Reality Check" on their placement chances.
+   - Output: A generated Markdown roadmap for the next 30 days based on their weak areas.
+
+3. Profile & Settings Management:
+   - A settings page to store Usernames and API Keys for the external services locally in the DB or secure storage.
+
+4. UI/UX Design System:
+   - Theme: "Cyberpunk / Hacker" aesthetic. Dark mode by default.
+   - Font: Geist Mono or a similar clean monospace font for that "developer" feel.
+   - Components: Use Cards, Progress bars, and Badges from Shadcn.
+
+Step-by-Step Implementation Guide for you:
+1. Setup the Next.js project with the specified stack.
+2. Create the Prisma schema to store User, Accounts, and PlatformStats.
+3. Build the Dashboard UI with placeholder widgets first.
+4. Implement the "Brutal AI" Server Action:
+   - Input: User's stat JSON.
+   - Prompt to Gemini: "Analyze these coding stats. Be brutally honest. Tell the user why they are failing or succeeding. Create a study plan."
+5. Implement the connections: For V1, use public APIs (like LeetCode's graphql or GitHub's REST API) to fetch basic real data if possible, otherwise simulate data fetching structure for the user to fill in.
+
+Constraint: Ensure the code is modular so new platforms can be added easily.
