@@ -1,38 +1,55 @@
-import { type User, type InsertUser } from "@shared/schema";
-import { randomUUID } from "crypto";
-
-// modify the interface with any CRUD methods
-// you might need
+import { db } from "./db";
+import { 
+  platforms, 
+  type Platform, 
+  type InsertPlatform,
+  users 
+} from "@shared/schema";
+import { eq, and } from "drizzle-orm";
+import { authStorage } from "./replit_integrations/auth";
+import { chatStorage } from "./replit_integrations/chat";
 
 export interface IStorage {
-  getUser(id: string): Promise<User | undefined>;
-  getUserByUsername(username: string): Promise<User | undefined>;
-  createUser(user: InsertUser): Promise<User>;
+  // Platforms
+  getPlatforms(userId: string): Promise<Platform[]>;
+  getPlatform(id: number): Promise<Platform | undefined>;
+  createPlatform(platform: InsertPlatform): Promise<Platform>;
+  updatePlatformStats(id: number, stats: any): Promise<Platform>;
+  deletePlatform(id: number): Promise<void>;
+  
+  // Auth & Chat (Re-exported for convenience if needed, but they have their own modules)
 }
 
-export class MemStorage implements IStorage {
-  private users: Map<string, User>;
-
-  constructor() {
-    this.users = new Map();
+export class DatabaseStorage implements IStorage {
+  async getPlatforms(userId: string): Promise<Platform[]> {
+    return await db.select().from(platforms).where(eq(platforms.userId, userId));
   }
 
-  async getUser(id: string): Promise<User | undefined> {
-    return this.users.get(id);
+  async getPlatform(id: number): Promise<Platform | undefined> {
+    const [platform] = await db.select().from(platforms).where(eq(platforms.id, id));
+    return platform;
   }
 
-  async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.username === username,
-    );
+  async createPlatform(insertPlatform: InsertPlatform): Promise<Platform> {
+    const [platform] = await db.insert(platforms).values(insertPlatform).returning();
+    return platform;
   }
 
-  async createUser(insertUser: InsertUser): Promise<User> {
-    const id = randomUUID();
-    const user: User = { ...insertUser, id };
-    this.users.set(id, user);
-    return user;
+  async updatePlatformStats(id: number, stats: any): Promise<Platform> {
+    const [platform] = await db
+      .update(platforms)
+      .set({ 
+        stats, 
+        lastUpdated: new Date() 
+      })
+      .where(eq(platforms.id, id))
+      .returning();
+    return platform;
+  }
+
+  async deletePlatform(id: number): Promise<void> {
+    await db.delete(platforms).where(eq(platforms.id, id));
   }
 }
 
-export const storage = new MemStorage();
+export const storage = new DatabaseStorage();
