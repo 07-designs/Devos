@@ -23,7 +23,7 @@ export async function registerRoutes(
   app: Express
 ): Promise<Server> {
   // 1. Setup Auth
-  await setupAuth(app);
+  //await setupAuth(app);
   registerAuthRoutes(app);
   
   // 2. Setup Chat
