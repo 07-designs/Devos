@@ -1,9 +1,15 @@
 import { CyberButton } from "@/components/CyberButton";
 import { TerminalSquare, ChevronRight, Github, Code, BarChart3, BrainCircuit } from "lucide-react";
+import { useLocation } from "wouter";
 
 export default function Landing() {
+  // const handleLogin = () => {
+  //   window.location.href = "/api/login";
+  // };
+  const [, setLocation] = useLocation();
+  
   const handleLogin = () => {
-    window.location.href = "/api/login";
+    setLocation("/auth");
   };
 
   return (

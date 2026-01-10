@@ -11,6 +11,7 @@ import Dashboard from "@/pages/Dashboard";
 import Mirror from "@/pages/Mirror";
 import Settings from "@/pages/Settings";
 import { useEffect } from "react";
+import Login from "@/pages/Login";
 
 function ProtectedRoute({ component: Component }: { component: React.ComponentType }) {
   const { user, isLoading } = useAuth();
@@ -53,6 +54,7 @@ function Router() {
   return (
     <Switch>
       <Route path="/" component={Landing} />
+      <Route path="/auth" component={Login} /> {/* NEW ROUTE */}
       <Route path="/dashboard">
         <ProtectedRoute component={Dashboard} />
       </Route>

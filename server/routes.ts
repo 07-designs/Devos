@@ -23,7 +23,7 @@ export async function registerRoutes(
   app: Express
 ): Promise<Server> {
   // 1. Setup Auth
-  //await setupAuth(app);
+  await setupAuth(app);
   registerAuthRoutes(app);
   
   // 2. Setup Chat
@@ -33,7 +33,7 @@ export async function registerRoutes(
   
   // LIST Platforms
   app.get(api.platforms.list.path, isAuthenticated, async (req: any, res) => {
-    const userId = req.user.claims.sub;
+    const userId = req.user?.id ?? req.user?.claims?.sub;
     const platforms = await storage.getPlatforms(userId);
     res.json(platforms);
   });
@@ -41,7 +41,7 @@ export async function registerRoutes(
   // CONNECT Platform
   app.post(api.platforms.connect.path, isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user?.id ?? req.user?.claims?.sub;
       const input = api.platforms.connect.input.parse(req.body);
       
       // Basic simulation of "fetching stats" on connect
@@ -73,8 +73,9 @@ export async function registerRoutes(
     const id = Number(req.params.id);
     const platform = await storage.getPlatform(id);
     
-    if (!platform) return res.status(404).json({ message: "Not found" });
-    if (platform.userId !== req.user.claims.sub) return res.status(401).json({ message: "Unauthorized" });
+  if (!platform) return res.status(404).json({ message: "Not found" });
+  const userId = req.user?.id ?? req.user?.claims?.sub;
+  if (platform.userId !== userId) return res.status(401).json({ message: "Unauthorized" });
     
     await storage.deletePlatform(id);
     res.status(204).send();
@@ -82,22 +83,23 @@ export async function registerRoutes(
 
   // SYNC Platform (Update Stats)
   app.post(api.platforms.sync.path, isAuthenticated, async (req: any, res) => {
-    const id = Number(req.params.id);
-    const platform = await storage.getPlatform(id);
-    
-    if (!platform) return res.status(404).json({ message: "Not found" });
-    if (platform.userId !== req.user.claims.sub) return res.status(401).json({ message: "Unauthorized" });
+  const id = Number(req.params.id);
+  const platform = await storage.getPlatform(id);
 
-    const newStats = await simulateFetchStats(platform.name, platform.username);
-    const updated = await storage.updatePlatformStats(id, newStats);
-    
-    res.json(updated);
+  if (!platform) return res.status(404).json({ message: "Not found" });
+  const userId = req.user?.id ?? req.user?.claims?.sub;
+  if (platform.userId !== userId) return res.status(401).json({ message: "Unauthorized" });
+
+  const newStats = await simulateFetchStats(platform.name, platform.username);
+  const updated = await storage.updatePlatformStats(id, newStats);
+
+  res.json(updated);
   });
 
   // AI "The Mirror" Analysis
   app.post(api.ai.analyze.path, isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user?.id ?? req.user?.claims?.sub;
       const platforms = await storage.getPlatforms(userId);
       
       if (platforms.length === 0) {

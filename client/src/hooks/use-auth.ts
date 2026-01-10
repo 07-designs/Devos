@@ -36,6 +36,11 @@ export function useAuth() {
       queryClient.setQueryData(["/api/auth/user"], null);
     },
   });
+  
+  async function logout(): Promise<void> {
+  await fetch("/api/logout", { method: "POST" });
+  window.location.href = "/auth";
+}
 
   return {
     user,
