@@ -35,7 +35,9 @@ export default function Settings() {
                   defaultValue={`${user?.firstName || ''} ${user?.lastName || ''}`} 
                   disabled 
                   className="opacity-50"
+      
                 />
+               
                 <CyberInput 
                   label="Email Address" 
                   defaultValue={user?.email || ''} 

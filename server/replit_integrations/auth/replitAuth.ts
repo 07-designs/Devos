@@ -95,10 +95,12 @@ export function setupAuth(app: Express) {
     })(req, res, next);
   });
 
-  // Register Route
+
+ // Register Route
   app.post("/api/register", async (req, res) => {
     try {
-      const { username, password } = req.body;
+      // Destructure new fields from the body
+      const { username, password, firstName, lastName, email } = req.body; //
       
       if (!username || !password) {
          return res.status(400).json({ message: "Username and password required" });
@@ -110,15 +112,19 @@ export function setupAuth(app: Express) {
       }
 
       const hashedPassword = await bcrypt.hash(password, 10);
+      
+      // Save all fields to the database
       const newUser = await authStorage.createUser({
         username,
         password: hashedPassword,
+        firstName, // Added
+        lastName,  // Added
+        email,     // Added
         profileImageUrl: `https://ui-avatars.com/api/?name=${username}`,
       });
       
       req.logIn(newUser, (err) => {
         if (err) throw err;
-        // Sanitize user before sending to client and avoid logging the hash
         const { password: _p, ...safeUser } = newUser as any;
         return res.status(201).json({ message: "Registered successfully", user: safeUser });
       });

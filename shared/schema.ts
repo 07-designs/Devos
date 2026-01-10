@@ -23,6 +23,33 @@ export const platforms = pgTable("platforms", {
   lastUpdated: timestamp("last_updated").defaultNow(),
 });
 
+
+
+
+
+
+// shared/schema.ts
+
+export const users = pgTable("users", {
+  id: serial("id").primaryKey(),
+  username: text("username").notNull().unique(),
+  password: text("password").notNull(),
+  // Add these lines:
+  displayName: text("display_name"), 
+  email: text("email"),
+  imageProfile: text("image_profile"), // You mentioned this already exists
+  // ... any other existing fields
+});
+
+// Update the insert schema to include these fields
+export const insertUserSchema = createInsertSchema(users).pick({
+  username: true,
+  password: true,
+  displayName: true, // Add this
+  email: true,       // Add this
+});
+
+// Define relations for platforms
 export const insertPlatformSchema = createInsertSchema(platforms).omit({ 
   id: true, 
   lastUpdated: true,
@@ -31,6 +58,9 @@ export const insertPlatformSchema = createInsertSchema(platforms).omit({
 
 export type Platform = typeof platforms.$inferSelect;
 export type InsertPlatform = z.infer<typeof insertPlatformSchema>;
+
+
+
 
 // === API CONTRACT TYPES ===
 

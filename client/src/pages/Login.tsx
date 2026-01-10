@@ -8,6 +8,10 @@ import { useToast } from "@/hooks/use-toast";
 export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [firstName, setFirstName] = useState(""); // Added state
+  const [lastName, setLastName] = useState("");   // Added state
+  const [email, setEmail] = useState("");         // Added state
+  
   const [isRegistering, setIsRegistering] = useState(false);
   const [, setLocation] = useLocation();
   const { toast } = useToast();
@@ -16,16 +20,21 @@ export default function Login() {
     e.preventDefault();
     const endpoint = isRegistering ? "/api/register" : "/api/login";
 
+    // Prepare payload based on mode
+    const payload = isRegistering 
+      ? { username, password, firstName, lastName, email } // Send all data on register
+      : { username, password };
+
     try {
       const res = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify(payload),
       });
 
       if (res.ok) {
         toast({ title: "Success", description: "Access Granted." });
-        window.location.href = "/dashboard"; // Hard reload to refresh auth state
+        window.location.href = "/dashboard";
       } else {
         const data = await res.json();
         toast({ title: "Error", description: data.message, variant: "destructive" });
@@ -45,6 +54,39 @@ export default function Login() {
           {isRegistering ? "INITIALIZE AGENT" : "SYSTEM LOGIN"}
         </h2>
         <form onSubmit={handleSubmit} className="space-y-4">
+          {/* NEW FIELDS: Only show when registering */}
+          {isRegistering && (
+            <>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-xs font-mono text-muted-foreground">FIRST NAME</label>
+                  <CyberInput 
+                    value={firstName} 
+                    onChange={(e) => setFirstName(e.target.value)} 
+                    placeholder="John"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-mono text-muted-foreground">LAST NAME</label>
+                  <CyberInput 
+                    value={lastName} 
+                    onChange={(e) => setLastName(e.target.value)} 
+                    placeholder="Doe"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="text-xs font-mono text-muted-foreground">EMAIL FREQUENCY</label>
+                <CyberInput 
+                  type="email"
+                  value={email} 
+                  onChange={(e) => setEmail(e.target.value)} 
+                  placeholder="agent@devos.system"
+                />
+              </div>
+            </>
+          )}
+
           <div>
             <label className="text-xs font-mono text-muted-foreground">CODENAME</label>
             <CyberInput 
