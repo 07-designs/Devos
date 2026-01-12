@@ -51,6 +51,9 @@ function Router() {
     );
   }
 
+  //Next need to work on protecting routes
+  //also i need to work on integrating various platforms like leetcode ,github,gitlab etc
+
   return (
     <Switch>
       <Route path="/" component={Landing} />

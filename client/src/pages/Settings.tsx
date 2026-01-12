@@ -32,7 +32,7 @@ export default function Settings() {
               <div className="space-y-4">
                 <CyberInput 
                   label="Display Name" 
-                  defaultValue={`${user?.firstName || ''} ${user?.lastName || ''}`} 
+                  defaultValue={`${user?.username || ''} ${user?.lastName || ''}`} 
                   disabled 
                   className="opacity-50"
       
